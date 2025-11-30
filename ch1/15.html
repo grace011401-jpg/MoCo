@@ -7,8 +7,10 @@
 </head>
 <body>
 
-<h2>地理位置測試 (Geolocation)</h2>
+<h2>地理位置測試</h2>
 
+<p>緯度: <span id="lat">-</span></p>
+<p>經度: <span id="lng">-</span></p>
 
 <script>
 // 檢查瀏覽器支援
@@ -18,26 +20,17 @@ if ("geolocation" in navigator) {
   console.log("地理位置服務不可用");
 }
 
-// 取得當前位置
+// 取得 GPS 位置
 navigator.geolocation.getCurrentPosition(
-  (position) => {
-    console.log("位置取得成功:", position);
-    handlePosition(position); // 呼叫解析函式
+  function(position) {
+    const c = position.coords;
+    document.getElementById("lat").innerText = c.latitude;
+    document.getElementById("lng").innerText = c.longitude;
   },
-  (error) => {
-    console.log("位置取得失敗:", error);
+  function(error) {
+    document.body.innerHTML += "<p>位置取得失敗</p>";
   }
 );
-
-// Position 物件解析
-function handlePosition(position) {
-  const coords = position.coords;
-
-  console.log("緯度:", coords.latitude);
-  console.log("經度:", coords.longitude);
-  console.log("精度:", coords.accuracy); // 單位：公尺
-
-}
 </script>
 
 </body>
