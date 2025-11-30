@@ -1,138 +1,81 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>DeviceMotion Demo</title>
-<style>
-  body { 
-    font-family: sans-serif; 
-    padding: 20px; 
-    line-height: 1.6; 
-  }
-  button { 
-    padding: 10px 20px; 
-    font-size: 16px; 
-  }
-  pre { 
-    background: #f3f3f3; 
-    padding: 10px; 
-    border-radius: 6px; 
-  }
-  .val { font-weight: bold; }
-</style>
+<title>Sensor Test</title>
 </head>
 <body>
 
-<h2>DeviceMotion 測試頁面</h2>
-<p>請點擊下方按鈕後開始取得行動裝置感測器。</p>
+<h2>感測器測試</h2>
+<button id="startBtn">啟用感測器</button>
 
-<button id="btn">啟用 DeviceMotion</button>
+<h3>方向</h3>
+<p>alpha: <span id="alpha">-</span></p>
+<p>beta: <span id="beta">-</span></p>
+<p>gamma: <span id="gamma">-</span></p>
 
-<h3>DeviceOrientation（方向角度）</h3>
-<p>Alpha（Z軸）：<span id="alpha" class="val">-</span></p>
-<p>Beta（X軸）：<span id="beta" class="val">-</span></p>
-<p>Gamma（Y軸）：<span id="gamma" class="val">-</span></p>
+<h3>加速度</h3>
+<p>x: <span id="ax">-</span></p>
+<p>y: <span id="ay">-</span></p>
+<p>z: <span id="az">-</span></p>
 
-<h3>DeviceMotion（加速度）</h3>
-<p>ax：<span id="ax" class="val">-</span></p>
-<p>ay：<span id="ay" class="val">-</span></p>
-<p>az：<span id="az" class="val">-</span></p>
+<h3>加速度(含重力)</h3>
+<p>x_g: <span id="axg">-</span></p>
+<p>y_g: <span id="ayg">-</span></p>
+<p>z_g: <span id="azg">-</span></p>
 
-<h3>DeviceMotion（含重力）</h3>
-<p>ax_g：<span id="ax_g" class="val">-</span></p>
-<p>ay_g：<span id="ay_g" class="val">-</span></p>
-<p>az_g：<span id="az_g" class="val">-</span></p>
-
-<h3>Gyroscope 旋轉速率</h3>
-<p>alpha（速度）：<span id="rAlpha" class="val">-</span></p>
-<p>beta（速度）：<span id="rBeta" class="val">-</span></p>
-<p>gamma（速度）：<span id="rGamma" class="val">-</span></p>
+<h3>旋轉速率</h3>
+<p>alpha(速): <span id="ralpha">-</span></p>
+<p>beta(速): <span id="rbeta">-</span></p>
+<p>gamma(速): <span id="rgamma">-</span></p>
 
 <script>
-async function requestPermissionIfNeeded() {
-  // 非 iOS 不需要權限流程
-  if (typeof DeviceMotionEvent.requestPermission !== "function") {
-    return "granted";
+// iPhone 要求權限
+async function askPermission() {
+  if (typeof DeviceMotionEvent.requestPermission === "function") {
+    try {
+      let r = await DeviceMotionEvent.requestPermission();
+      return r === "granted";
+    } catch (e) {
+      return false;
+    }
   }
-
-  // iOS：必須在使用者操作後呼叫
-  try {
-    const state = await DeviceMotionEvent.requestPermission();
-    return state; // "granted" 或 "denied"
-  } catch (err) {
-    return "denied";
-  }
+  return true; // Android 不用
 }
 
-const btn = document.getElementById("btn");
-
-// Orientation
-const alphaEl = document.getElementById("alpha");
-const betaEl = document.getElementById("beta");
-const gammaEl = document.getElementById("gamma");
-
-// Acceleration
-const axEl = document.getElementById("ax");
-const ayEl = document.getElementById("ay");
-const azEl = document.getElementById("az");
-
-// Acceleration including gravity
-const axgEl = document.getElementById("ax_g");
-const aygEl = document.getElementById("ay_g");
-const azgEl = document.getElementById("az_g");
-
-// Rotation rate
-const rAlphaEl = document.getElementById("rAlpha");
-const rBetaEl = document.getElementById("rBeta");
-const rGammaEl = document.getElementById("rGamma");
-
-btn.addEventListener("click", async () => {
-  try {
-    // 檢查支援度
-    if (!window.DeviceMotionEvent && !window.DeviceOrientationEvent) {
-      alert("此裝置不支援 Motion/orientation 感測器");
-      return;
-    }
-
-    // ======= Orientation 授權 =======
-    const result = await requestPermissionIfNeeded();
-    if (result !== "granted") {
-      alert("使用者未授權感測器");
-      return;
-    }
-
-    // ====== DeviceOrientation Listener ======
-    window.addEventListener("deviceorientation", (event) => {
-      alphaEl.textContent = event.alpha?.toFixed(2) ?? "-";
-      betaEl.textContent = event.beta?.toFixed(2) ?? "-";
-      gammaEl.textContent = event.gamma?.toFixed(2) ?? "-";
-    });
-
-    // ====== DeviceMotion Listener ======
-    window.addEventListener("devicemotion", (event) => {
-      const acc = event.acceleration || {};
-      axEl.textContent = acc.x?.toFixed(2) ?? "-";
-      ayEl.textContent = acc.y?.toFixed(2) ?? "-";
-      azEl.textContent = acc.z?.toFixed(2) ?? "-";
-
-      const accG = event.accelerationIncludingGravity || {};
-      axgEl.textContent = accG.x?.toFixed(2) ?? "-";
-      aygEl.textContent = accG.y?.toFixed(2) ?? "-";
-      azgEl.textContent = accG.z?.toFixed(2) ?? "-";
-
-      const rot = event.rotationRate || {};
-      rAlphaEl.textContent = rot.alpha?.toFixed(2) ?? "-";
-      rBetaEl.textContent = rot.beta?.toFixed(2) ?? "-";
-      rGammaEl.textContent = rot.gamma?.toFixed(2) ?? "-";
-    });
-
-    btn.disabled = true;
-    btn.textContent = "感測器已啟動";
-
-  } catch (err) {
-    alert("錯誤：" + err);
+document.getElementById("startBtn").onclick = async function () {
+  let ok = await askPermission();
+  if (!ok) {
+    alert("沒有權限無法使用感測器");
+    return;
   }
-});
+
+  window.addEventListener("deviceorientation", function (e) {
+    document.getElementById("alpha").innerText = e.alpha ? e.alpha.toFixed(2) : "-";
+    document.getElementById("beta").innerText = e.beta ? e.beta.toFixed(2) : "-";
+    document.getElementById("gamma").innerText = e.gamma ? e.gamma.toFixed(2) : "-";
+  });
+
+  window.addEventListener("devicemotion", function (e) {
+    let a = e.acceleration || {};
+    document.getElementById("ax").innerText = a.x ? a.x.toFixed(2) : "-";
+    document.getElementById("ay").innerText = a.y ? a.y.toFixed(2) : "-";
+    document.getElementById("az").innerText = a.z ? a.z.toFixed(2) : "-";
+
+    let ag = e.accelerationIncludingGravity || {};
+    document.getElementById("axg").innerText = ag.x ? ag.x.toFixed(2) : "-";
+    document.getElementById("ayg").innerText = ag.y ? ag.y.toFixed(2) : "-";
+    document.getElementById("azg").innerText = ag.z ? ag.z.toFixed(2) : "-";
+
+    let rot = e.rotationRate || {};
+    document.getElementById("ralpha").innerText = rot.alpha ? rot.alpha.toFixed(2) : "-";
+    document.getElementById("rbeta").innerText = rot.beta ? rot.beta.toFixed(2) : "-";
+    document.getElementById("rgamma").innerText = rot.gamma ? rot.gamma.toFixed(2) : "-";
+  });
+
+  this.disabled = true;
+  this.innerText = "已啟用";
+};
 </script>
 
 </body>
