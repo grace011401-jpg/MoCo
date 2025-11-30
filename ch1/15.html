@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地理位置測試</title>
+</head>
+<body>
+
+<h2>地理位置測試 (Geolocation)</h2>
+<p>請查看 Console 看結果（F12 開啟）</p>
+
+<script>
+// 檢查瀏覽器支援
+if ("geolocation" in navigator) {
+  console.log("地理位置服務可用");
+} else {
+  console.log("地理位置服務不可用");
+}
+
+// 取得當前位置
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    console.log("位置取得成功:", position);
+    handlePosition(position); // 呼叫解析函式
+  },
+  (error) => {
+    console.log("位置取得失敗:", error);
+  }
+);
+
+// Position 物件解析
+function handlePosition(position) {
+  const coords = position.coords;
+
+  console.log("緯度:", coords.latitude);
+  console.log("經度:", coords.longitude);
+  console.log("精度:", coords.accuracy); // 單位：公尺
+  console.log("海拔:", coords.altitude);
+  console.log("海拔精度:", coords.altitudeAccuracy);
+  console.log("速度:", coords.speed);
+  console.log("方向:", coords.heading);
+}
+</script>
+
+</body>
+</html>
