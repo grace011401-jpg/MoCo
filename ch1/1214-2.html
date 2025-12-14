@@ -6,11 +6,11 @@
 </head>
 <body>
 
-<h2>POST 傳送資料到伺服器</h2>
+<h2>POST 傳送資料示範</h2>
 
 <form id="formElem">
-  帳號：<input type="text" name="account"><br><br>
-  密碼：<input type="password" name="password"><br><br>
+  姓名：<input type="text" name="name"><br><br>
+  留言：<input type="text" name="message"><br><br>
   <button type="submit">送出 (POST)</button>
 </form>
 
@@ -26,7 +26,7 @@
     });
 
     let result = await response.json();
-    alert("POST 資料已成功送出");
+    alert("資料已成功送出！");
     console.log(result);
   };
 </script>
