@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>POST 傳送資料</title>
+</head>
+<body>
+
+<h2>POST 傳送資料到伺服器</h2>
+
+<form id="formElem">
+  帳號：<input type="text" name="account"><br><br>
+  密碼：<input type="password" name="password"><br><br>
+  <button type="submit">送出 (POST)</button>
+</form>
+
+<script>
+  const formElem = document.getElementById("formElem");
+
+  formElem.onsubmit = async function (e) {
+    e.preventDefault(); // 阻止表單預設送出
+
+    let response = await fetch("https://httpcan.org/post", {
+      method: "POST",
+      body: new FormData(formElem)
+    });
+
+    let result = await response.json();
+    alert("POST 資料已成功送出");
+    console.log(result);
+  };
+</script>
+
+</body>
+</html>
