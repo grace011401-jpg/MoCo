@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>行動裝置生活資訊查詢系統</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 8px;
+      width: 100%;
+      margin-top: 10px;
+    }
+    #result {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>生活資訊查詢（天氣模擬）</h2>
+
+  <label>請輸入城市名稱：</label>
+  <input type="text" id="city" placeholder="例如：Taipei">
+
+  <button onclick="search()">查詢</button>
+
+  <div id="result">尚未查詢</div>
+
+  <script>
+    function search() {
+      let city = document.getElementById("city").value;
+
+      if (city === "") {
+        alert("請輸入城市名稱");
+        return;
+      }
+
+      // 使用假資料 API（示範通訊用）
+      fetch("https://jsonplaceholder.typicode.com/posts/1")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("result").innerHTML =
+            "城市：" + city + "<br>" +
+            "天氣狀態：晴朗<br>" +
+            "溫度：25°C<br><br>" +
+            "（資料透過 HTTP 通訊取得）";
+        });
+    }
+  </script>
+
+</body>
+</html>
