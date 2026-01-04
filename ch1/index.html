@@ -2,298 +2,148 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>天氣查詢系統</title>
+  <title>行動智慧生活助手</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f0f0f0;
+      font-family: Arial;
+      background: #f0f0f0;
+      padding: 15px;
     }
-    
-    .container {
-      max-width: 400px;
-      margin: 0 auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    h1 {
-      font-size: 20px;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    
-    .status {
-      background: #e8f4f8;
-      padding: 10px;
-      border-radius: 4px;
-      font-size: 14px;
+
+    .box {
+      background: #fff;
+      padding: 15px;
       margin-bottom: 15px;
+      border-radius: 5px;
     }
-    
+
+    h1 {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    h2 {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 13px;
+      color: #555;
+    }
+
     button {
       width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      font-size: 15px;
-      background: #4a90e2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    
-    button:active {
-      background: #357abd;
-    }
-    
-    button:disabled {
-      background: #cccccc;
-    }
-    
-    .input-section {
-      margin: 15px 0;
-      display: none;
-    }
-    
-    input {
-      width: 100%;
       padding: 10px;
-      font-size: 15px;
-      border: 1px solid #ddd;
+      margin-top: 5px;
+      border: none;
+      background: #2196f3;
+      color: white;
       border-radius: 4px;
-      box-sizing: border-box;
     }
-    
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      display: none;
+
+    button:disabled {
+      background: #aaa;
     }
-    
-    #result.show {
-      display: block;
+
+    .status {
+      font-size: 13px;
+      margin-bottom: 5px;
     }
-    
-    .weather-main {
-      text-align: center;
-      margin: 15px 0;
+
+    .online {
+      color: green;
     }
-    
-    .temp {
-      font-size: 36px;
-      font-weight: bold;
-      color: #4a90e2;
-    }
-    
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      margin: 8px 0;
-      font-size: 14px;
-    }
-    
-    .sensor-box {
-      margin-top: 20px;
-      padding: 15px;
-      background: #fff9e6;
-      border-radius: 4px;
-      display: none;
-    }
-    
-    .sensor-box.show {
-      display: block;
-    }
-    
-    .sensor-item {
-      margin: 10px 0;
-      font-size: 14px;
-    }
-    
-    .compass-simple {
-      width: 60px;
-      height: 60px;
-      border: 2px solid #333;
-      border-radius: 50%;
-      margin: 10px auto;
-      position: relative;
-      background: white;
-    }
-    
-    .needle {
-      position: absolute;
-      top: 5px;
-      left: 50%;
-      width: 2px;
-      height: 25px;
-      background: red;
-      transform-origin: bottom center;
-      margin-left: -1px;
+
+    .offline {
+      color: red;
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>行動裝置天氣查詢</h1>
-    
-    <div class="status" id="status">系統啟動中...</div>
-    
-    <button onclick="useGPS()" id="gpsBtn">使用GPS定位</button>
-    <button onclick="toggleInput()">手動輸入城市</button>
-    
-    <div class="input-section" id="inputSection">
-      <input type="text" id="cityInput" placeholder="輸入城市名稱" onkeypress="if(event.key==='Enter') searchCity()">
-      <button onclick="searchCity()">查詢</button>
-    </div>
-    
-    <div id="result"></div>
-    
-    <div class="sensor-box" id="sensorBox">
-      <strong>感測器資料：</strong>
-      <div class="sensor-item">方向: <span id="direction">--</span></div>
-      <div class="sensor-item">加速度: <span id="accel">--</span></div>
-      <div class="sensor-item">搖動次數: <span id="shakeCount">0</span></div>
-      <div class="compass-simple">
-        <div class="needle" id="needle"></div>
-      </div>
-    </div>
+
+  <div class="box">
+    <h1>行動智慧生活助手</h1>
+    <p>資管二A 王芊慈 3311331027</p>
+  </div>
+
+  <div class="box">
+    <h2>模組一：GPS 定位</h2>
+    <div class="status" id="gpsText">尚未定位</div>
+    <button onclick="getLocation()">開始定位</button>
+    <div id="location"></div>
+  </div>
+
+  <div class="box">
+    <h2>模組二：天氣查詢</h2>
+    <div class="status" id="weatherText">尚未查詢</div>
+    <button onclick="getWeather()" id="weatherBtn" disabled>查詢天氣</button>
+    <div id="weather"></div>
+  </div>
+
+  <div class="box">
+    <h2>模組三：網路狀態</h2>
+    <div id="netStatus">檢查中...</div>
   </div>
 
   <script>
     let lat = null;
     let lon = null;
-    let shakes = 0;
-    let lastShake = 0;
-    
-    // 初始化
-    window.onload = function() {
-      checkSensors();
+
+    window.onload = function () {
+      updateNet();
+      window.addEventListener("online", updateNet);
+      window.addEventListener("offline", updateNet);
     };
-    
-    function checkSensors() {
-      let features = [];
-      
-      if ('geolocation' in navigator) {
-        features.push('GPS');
-      }
-      
-      if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', function(e) {
-          if (e.alpha !== null) {
-            document.getElementById('direction').textContent = Math.round(e.alpha) + '度';
-            document.getElementById('needle').style.transform = 'rotate(' + e.alpha + 'deg)';
-          }
-        });
-        features.push('方向感測');
-      }
-      
-      if (window.DeviceMotionEvent) {
-        window.addEventListener('devicemotion', function(e) {
-          if (e.accelerationIncludingGravity) {
-            let x = e.accelerationIncludingGravity.x || 0;
-            let y = e.accelerationIncludingGravity.y || 0;
-            let z = e.accelerationIncludingGravity.z || 0;
-            let total = Math.sqrt(x*x + y*y + z*z);
-            
-            document.getElementById('accel').textContent = total.toFixed(1);
-            
-            // 偵測搖動
-            if (total > 15 && Date.now() - lastShake > 1000) {
-              lastShake = Date.now();
-              shakes++;
-              document.getElementById('shakeCount').textContent = shakes;
-              
-              if (lat && lon) {
-                getWeather(lat, lon, '您的位置');
-              }
-            }
-          }
-        });
-        features.push('動作感測');
-      }
-      
-      if (features.length > 0) {
-        document.getElementById('status').textContent = '已啟用: ' + features.join(', ');
-        document.getElementById('sensorBox').classList.add('show');
-      } else {
-        document.getElementById('status').textContent = '此裝置不支援感測器功能';
-      }
+
+    function getLocation() {
+      const gpsText = document.getElementById("gpsText");
+
+      gpsText.textContent = "定位中...";
+
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        lat = pos.coords.latitude;
+        lon = pos.coords.longitude;
+
+        gpsText.textContent = "定位成功";
+
+        document.getElementById("location").innerHTML =
+          "緯度：" + lat.toFixed(4) + "<br>經度：" + lon.toFixed(4);
+
+        document.getElementById("weatherBtn").disabled = false;
+      });
     }
-    
-    function useGPS() {
-      if (!navigator.geolocation) {
-        alert('您的瀏覽器不支援GPS');
-        return;
-      }
-      
-      document.getElementById('gpsBtn').disabled = true;
-      document.getElementById('gpsBtn').textContent = '定位中...';
-      document.getElementById('result').className = 'show';
-      document.getElementById('result').innerHTML = '正在取得位置...';
-      
-      navigator.geolocation.getCurrentPosition(
-        function(pos) {
-          lat = pos.coords.latitude;
-          lon = pos.coords.longitude;
-          getWeather(lat, lon, '您的位置');
-          document.getElementById('gpsBtn').disabled = false;
-          document.getElementById('gpsBtn').textContent = '使用GPS定位';
-        },
-        function(err) {
-          document.getElementById('result').innerHTML = '定位失敗: ' + err.message;
-          document.getElementById('gpsBtn').disabled = false;
-          document.getElementById('gpsBtn').textContent = '使用GPS定位';
-        }
-      );
-    }
-    
-    function toggleInput() {
-      let section = document.getElementById('inputSection');
-      section.style.display = section.style.display === 'none' ? 'block' : 'none';
-    }
-    
-    function searchCity() {
-      let city = document.getElementById('cityInput').value;
-      if (!city) {
-        alert('請輸入城市名稱');
-        return;
-      }
-      getWeather(null, null, city);
-    }
-    
-    function getWeather(latitude, longitude, cityName) {
-      document.getElementById('result').className = 'show';
-      document.getElementById('result').innerHTML = '查詢中...';
-      
-      // 模擬取得天氣資料
-      setTimeout(function() {
-        let temp = Math.floor(Math.random() * 15) + 18;
-        let humidity = Math.floor(Math.random() * 30) + 50;
-        let wind = (Math.random() * 5 + 1).toFixed(1);
-        
-        let html = '<div class="weather-main">';
-        html += '<h2>' + cityName + '</h2>';
-        
-        if (latitude && longitude) {
-          html += '<div style="font-size:12px;color:#666;">座標: ' + latitude.toFixed(4) + ', ' + longitude.toFixed(4) + '</div>';
-        }
-        
-        html += '<div class="temp">' + temp + '°C</div>';
-        html += '<div>晴朗</div>';
-        html += '</div>';
-        
-        html += '<div class="info-row"><span>體感溫度:</span><span>' + (temp + 2) + '°C</span></div>';
-        
-        document.getElementById('result').innerHTML = html;
+
+    function getWeather() {
+      const weatherText = document.getElementById("weatherText");
+
+      weatherText.textContent = "查詢中...";
+
+      setTimeout(function () {
+        const temp = Math.floor(Math.random() * 6) + 23;
+
+        weatherText.textContent = "查詢完成";
+
+        document.getElementById("weather").innerHTML =
+          "目前氣溫：" + temp + "°C<br>天氣：晴天";
       }, 800);
     }
+
+    function updateNet() {
+      const net = document.getElementById("netStatus");
+
+      if (navigator.onLine) {
+        net.textContent = "網路狀態：線上";
+        net.className = "online";
+      } else {
+        net.textContent = "網路狀態：離線";
+        net.className = "offline";
+      }
+    }
   </script>
+
 </body>
 </html>
