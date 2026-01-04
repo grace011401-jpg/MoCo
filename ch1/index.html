@@ -21,45 +21,20 @@
 
     h1 {
       font-size: 18px;
-      margin-bottom: 5px;
     }
 
     h2 {
       font-size: 15px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
-    p {
+    .text {
       font-size: 13px;
-      color: #555;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
       margin-top: 5px;
-      border: none;
-      background: #2196f3;
-      color: white;
-      border-radius: 4px;
     }
 
-    button:disabled {
-      background: #aaa;
-    }
-
-    .status {
-      font-size: 13px;
-      margin-bottom: 5px;
-    }
-
-    .online {
-      color: green;
-    }
-
-    .offline {
-      color: red;
-    }
+    .online { color: green; }
+    .offline { color: red; }
   </style>
 </head>
 
@@ -67,80 +42,75 @@
 
   <div class="box">
     <h1>行動智慧生活助手</h1>
-    <p>資管二A 王芊慈 3311331027</p>
+    <div class="text">資管二A 王芊慈 3311331027</div>
   </div>
 
   <div class="box">
-    <h2>模組一：GPS 定位</h2>
-    <div class="status" id="gpsText">尚未定位</div>
-    <button onclick="getLocation()">開始定位</button>
-    <div id="location"></div>
+    <h2>目前位置</h2>
+    <div class="text" id="locationText">定位中，請允許權限...</div>
   </div>
 
   <div class="box">
-    <h2>模組二：天氣查詢</h2>
-    <div class="status" id="weatherText">尚未查詢</div>
-    <button onclick="getWeather()" id="weatherBtn" disabled>查詢天氣</button>
-    <div id="weather"></div>
-  </div>
-
-  <div class="box">
-    <h2>模組三：網路狀態</h2>
-    <div id="netStatus">檢查中...</div>
+    <h2>網路狀態</h2>
+    <div class="text" id="netText">檢查中...</div>
   </div>
 
   <script>
-    let lat = null;
-    let lon = null;
-
     window.onload = function () {
-      updateNet();
-      window.addEventListener("online", updateNet);
-      window.addEventListener("offline", updateNet);
+      getLocation();
+      updateNetwork();
+      window.addEventListener("online", updateNetwork);
+      window.addEventListener("offline", updateNetwork);
     };
 
     function getLocation() {
-      const gpsText = document.getElementById("gpsText");
+      const text = document.getElementById("locationText");
 
-      gpsText.textContent = "定位中...";
+      if (!navigator.geolocation) {
+        text.textContent = "裝置不支援定位功能";
+        return;
+      }
 
-      navigator.geolocation.getCurrentPosition(function (pos) {
-        lat = pos.coords.latitude;
-        lon = pos.coords.longitude;
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
 
-        gpsText.textContent = "定位成功";
+          const area = reverseGeocode(lat, lon);
 
-        document.getElementById("location").innerHTML =
-          "緯度：" + lat.toFixed(4) + "<br>經度：" + lon.toFixed(4);
-
-        document.getElementById("weatherBtn").disabled = false;
-      });
+          text.innerHTML =
+            "緯度：" + lat.toFixed(4) + "<br>" +
+            "經度：" + lon.toFixed(4) + "<br>" +
+            "行政區：" + area;
+        },
+        function () {
+          text.textContent = "定位失敗，請重新整理頁面";
+        }
+      );
     }
 
-    function getWeather() {
-      const weatherText = document.getElementById("weatherText");
-
-      weatherText.textContent = "查詢中...";
-
-      setTimeout(function () {
-        const temp = Math.floor(Math.random() * 6) + 23;
-
-        weatherText.textContent = "查詢完成";
-
-        document.getElementById("weather").innerHTML =
-          "目前氣溫：" + temp + "°C<br>天氣：晴天";
-      }, 800);
+    function reverseGeocode(lat, lon) {
+      if (lat > 25.0 && lat < 25.2 && lon > 121.4 && lon < 121.6) {
+        return "台北市";
+      }
+      if (lat > 24.0 && lat < 24.3 && lon > 120.5 && lon < 120.8) {
+        return "台中市";
+      }
+      if (lat > 22.5 && lat < 22.8 && lon > 120.2 && lon < 120.4) {
+        return "高雄市";
+      }
+      return "台灣其他地區";
     }
 
-    function updateNet() {
-      const net = document.getElementById("netStatus");
+    function updateNetwork() {
+      const net = document.getElementById("netText");
 
       if (navigator.onLine) {
         net.textContent = "網路狀態：線上";
-        net.className = "online";
+        net.className = "text online";
       } else {
         net.textContent = "網路狀態：離線";
-        net.className = "offline";
+        net.className = "text offline";
       }
     }
   </script>
