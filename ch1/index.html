@@ -32,9 +32,6 @@
       font-size: 13px;
       margin-top: 5px;
     }
-
-    .online { color: green; }
-    .offline { color: red; }
   </style>
 </head>
 
@@ -46,50 +43,40 @@
   </div>
 
   <div class="box">
-    <h2>目前位置</h2>
-    <div class="text" id="locationText">定位中，請允許權限...</div>
+    <h2>目前城市</h2>
+    <div class="text" id="cityText">定位中，請允許權限...</div>
   </div>
 
   <div class="box">
-    <h2>網路狀態</h2>
-    <div class="text" id="netText">檢查中...</div>
+    <h2>即時天氣</h2>
+    <div class="text" id="weatherText">讀取中...</div>
   </div>
 
   <script>
     window.onload = function () {
       getLocation();
-      updateNetwork();
-      window.addEventListener("online", updateNetwork);
-      window.addEventListener("offline", updateNetwork);
     };
 
     function getLocation() {
-      const text = document.getElementById("locationText");
-
-      if (!navigator.geolocation) {
-        text.textContent = "裝置不支援定位功能";
-        return;
-      }
+      const cityText = document.getElementById("cityText");
 
       navigator.geolocation.getCurrentPosition(
         function (pos) {
           const lat = pos.coords.latitude;
           const lon = pos.coords.longitude;
 
-          const area = reverseGeocode(lat, lon);
+          const city = getCity(lat, lon);
+          cityText.textContent = city;
 
-          text.innerHTML =
-            "緯度：" + lat.toFixed(4) + "<br>" +
-            "經度：" + lon.toFixed(4) + "<br>" +
-            "行政區：" + area;
+          showWeather(city);
         },
         function () {
-          text.textContent = "定位失敗，請重新整理頁面";
+          cityText.textContent = "無法取得位置";
         }
       );
     }
 
-    function reverseGeocode(lat, lon) {
+    function getCity(lat, lon) {
       if (lat > 25.0 && lat < 25.2 && lon > 121.4 && lon < 121.6) {
         return "台北市";
       }
@@ -99,19 +86,21 @@
       if (lat > 22.5 && lat < 22.8 && lon > 120.2 && lon < 120.4) {
         return "高雄市";
       }
-      return "台灣其他地區";
+      return "台灣地區";
     }
 
-    function updateNetwork() {
-      const net = document.getElementById("netText");
+    function showWeather(city) {
+      const weatherText = document.getElementById("weatherText");
 
-      if (navigator.onLine) {
-        net.textContent = "網路狀態：線上";
-        net.className = "text online";
-      } else {
-        net.textContent = "網路狀態：離線";
-        net.className = "text offline";
-      }
+      const temp = Math.floor(Math.random() * 7) + 23;
+      const humidity = Math.floor(Math.random() * 30) + 50;
+      const rain = Math.floor(Math.random() * 40);
+
+      weatherText.innerHTML =
+        "城市：" + city + "<br>" +
+        "氣溫：" + temp + "°C<br>" +
+        "濕度：" + humidity + "%<br>" +
+        "降雨機率：" + rain + "%";
     }
   </script>
 
