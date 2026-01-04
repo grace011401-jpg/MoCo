@@ -32,6 +32,22 @@
       font-size: 13px;
       margin-top: 5px;
     }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 8px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
   </style>
 </head>
 
@@ -43,35 +59,39 @@
   </div>
 
   <div class="box">
-    <h2>目前城市</h2>
+    <h2>方式一：自動定位</h2>
     <div class="text" id="cityText">定位中，請允許權限...</div>
   </div>
 
   <div class="box">
-    <h2>即時天氣</h2>
-    <div class="text" id="weatherText">讀取中...</div>
+    <h2>方式二：手動輸入城市</h2>
+    <input type="text" id="cityInput" placeholder="例如：台中市">
+    <button onclick="searchByInput()">查詢天氣</button>
+  </div>
+
+  <div class="box">
+    <h2>天氣資訊</h2>
+    <div class="text" id="weatherText">尚未取得資料</div>
   </div>
 
   <script>
     window.onload = function () {
-      getLocation();
+      autoLocate();
     };
 
-    function getLocation() {
-      const cityText = document.getElementById("cityText");
-
+    function autoLocate() {
       navigator.geolocation.getCurrentPosition(
         function (pos) {
           const lat = pos.coords.latitude;
           const lon = pos.coords.longitude;
 
           const city = getCity(lat, lon);
-          cityText.textContent = city;
+          document.getElementById("cityText").textContent = city;
 
           showWeather(city);
         },
         function () {
-          cityText.textContent = "無法取得位置";
+          document.getElementById("cityText").textContent = "未開啟定位";
         }
       );
     }
@@ -89,14 +109,24 @@
       return "台灣地區";
     }
 
-    function showWeather(city) {
-      const weatherText = document.getElementById("weatherText");
+    function searchByInput() {
+      const city = document.getElementById("cityInput").value;
 
+      if (city === "") {
+        alert("請輸入城市");
+        return;
+      }
+
+      document.getElementById("cityText").textContent = city;
+      showWeather(city);
+    }
+
+    function showWeather(city) {
       const temp = Math.floor(Math.random() * 7) + 23;
       const humidity = Math.floor(Math.random() * 30) + 50;
       const rain = Math.floor(Math.random() * 40);
 
-      weatherText.innerHTML =
+      document.getElementById("weatherText").innerHTML =
         "城市：" + city + "<br>" +
         "氣溫：" + temp + "°C<br>" +
         "濕度：" + humidity + "%<br>" +
